@@ -19,7 +19,7 @@ class ButtonsTabBar extends StatefulWidget implements PreferredSizeWidget {
     this.borderWidth = 0,
     this.borderColor = Colors.black,
     this.unselectedBorderColor = Colors.black,
-    this.physics = const BouncingScrollPhysics(),
+    this.physics,
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 4),
     this.buttonMargin = const EdgeInsets.all(4),
     this.labelSpacing = 4.0,
@@ -28,6 +28,7 @@ class ButtonsTabBar extends StatefulWidget implements PreferredSizeWidget {
     this.height = _kTabHeight,
     this.center = false,
     this.onTap,
+    this.hPadding = 0.0,
   }) : super(key: key) {
     assert(backgroundColor == null || decoration == null);
     assert(unselectedBackgroundColor == null || unselectedDecoration == null);
@@ -105,7 +106,7 @@ class ButtonsTabBar extends StatefulWidget implements PreferredSizeWidget {
   /// The physics used for the [ScrollController] of the tabs list.
   ///
   /// The default value is [BouncingScrollPhysics].
-  final ScrollPhysics physics;
+  final ScrollPhysics? physics;
 
   /// The [EdgeInsets] used for the [Padding] of the buttons' content.
   ///
@@ -147,6 +148,8 @@ class ButtonsTabBar extends StatefulWidget implements PreferredSizeWidget {
   /// callbacks should not make changes to the [TabController] since that would
   /// interfere with the default tap handler.
   final void Function(int)? onTap;
+
+  final double hPadding;
 
   @override
   Size get preferredSize {
@@ -314,7 +317,8 @@ class _ButtonsTabBarState extends State<ButtonsTabBar>
               Colors.grey[300],
           boxShadow: widget.unselectedDecoration?.boxShadow,
           gradient: widget.unselectedDecoration?.gradient,
-          borderRadius: widget.unselectedDecoration?.borderRadius ?? BorderRadius.circular(widget.radius),
+          borderRadius: widget.unselectedDecoration?.borderRadius ??
+              BorderRadius.circular(widget.radius),
         ),
         BoxDecoration(
           color: widget.decoration?.color ??
@@ -322,7 +326,8 @@ class _ButtonsTabBarState extends State<ButtonsTabBar>
               Theme.of(context).colorScheme.secondary,
           boxShadow: widget.decoration?.boxShadow,
           gradient: widget.decoration?.gradient,
-          borderRadius: widget.decoration?.borderRadius ?? BorderRadius.circular(widget.radius),
+          borderRadius: widget.decoration?.borderRadius ??
+              BorderRadius.circular(widget.radius),
         ),
         animationValue);
 
@@ -350,7 +355,6 @@ class _ButtonsTabBarState extends State<ButtonsTabBar>
         right: widget.buttonMargin.right / 2,
       );
     }
-
 
     return Padding(
       key: _tabKeys[index],
@@ -438,7 +442,11 @@ class _ButtonsTabBarState extends State<ButtonsTabBar>
             physics: widget.physics,
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
-            padding: widget.center ? _centerPadding : EdgeInsets.zero,
+            padding: widget.center
+                ? _centerPadding
+                : EdgeInsets.symmetric(
+                    horizontal: widget.hPadding,
+                  ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(
